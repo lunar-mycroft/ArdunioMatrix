@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2010
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ArdunioMatrix", "ArdunioMatrix\ArdunioMatrix.vcxproj", "{8B8F83AB-9B66-4EE0-B945-A87BA12CB854}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x64 = Debug|x64
+		Debug|x86 = Debug|x86
+		Release|x64 = Release|x64
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8B8F83AB-9B66-4EE0-B945-A87BA12CB854}.Debug|x64.ActiveCfg = Debug|x64
+		{8B8F83AB-9B66-4EE0-B945-A87BA12CB854}.Debug|x64.Build.0 = Debug|x64
+		{8B8F83AB-9B66-4EE0-B945-A87BA12CB854}.Debug|x86.ActiveCfg = Debug|Win32
+		{8B8F83AB-9B66-4EE0-B945-A87BA12CB854}.Debug|x86.Build.0 = Debug|Win32
+		{8B8F83AB-9B66-4EE0-B945-A87BA12CB854}.Release|x64.ActiveCfg = Release|x64
+		{8B8F83AB-9B66-4EE0-B945-A87BA12CB854}.Release|x64.Build.0 = Release|x64
+		{8B8F83AB-9B66-4EE0-B945-A87BA12CB854}.Release|x86.ActiveCfg = Release|Win32
+		{8B8F83AB-9B66-4EE0-B945-A87BA12CB854}.Release|x86.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {14B9DA59-2C2E-4DD1-A40B-4A3B7B52DEEA}
+	EndGlobalSection
+EndGlobal
