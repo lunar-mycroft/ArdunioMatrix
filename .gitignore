@@ -262,3 +262,5 @@ __pycache__/
 ArdunioMatrix/adafruitQuaternion.hpp
 ArdunioMatrix/adafruitVector.hpp
 *sln
+*.vcxproj
+*.vcxproj.filters
