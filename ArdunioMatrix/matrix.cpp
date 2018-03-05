@@ -131,3 +131,94 @@ Matrix & Matrix::operator/=(const float& f) {
 	(*this) = (*this) / f;
 	return *this;
 }
+
+Matrix transp(const Matrix & in){
+	Matrix result(in.h_,in.w_);
+	for(unsigned char i=0; i<in.w_;++i) for(unsigned char j=0; j<in.h_;++j) result.elements[j][i]=result.elements[i][j];
+}
+
+Matrix invert()const Matrix in){
+	if(in.w_!=in.h_){
+		in.NaNify;
+	} else {
+		// A = input matrix AND result matrix
+		// n = number of rows = number of columns in A (n x n)
+		unsigned char pivrow;		// keeps track of current pivot row
+		unsigned char k, i, j;		// k: overall index along diagonal; i: row index; j: col index
+		unsigned char pivrows[n]; // keeps track of rows swaps to undo at end
+		float tmp;		// used for finding max value and making column swaps
+
+		for (k = 0; k < n; k++)
+		{
+			// find pivot row, the row with biggest entry in current column
+			tmp = 0;
+			for (i = k; i < n; i++)
+			{
+				if (abs(in.elements[i * in.w_ + k]) >= tmp)	// 'Avoid using other functions inside abs()?'
+				{
+					tmp = abs(in.elements[i * in.w_ + k]);
+					pivrow = i;
+				}
+			}
+
+			// check for singular matrix
+			if (in.elements[pivrow * in.w_ + k] == 0.0f)
+			{
+				in.NaNify;
+				goto doneCalc;
+			}
+
+			// Execute pivot (row swap) if needed
+			if (pivrow != k)
+			{
+				// swap row k with pivrow
+				for (j = 0; j < n; j++)
+				{
+					tmp = in.elements[k * in.w_ + j];
+					in.elements[k * in.w_ + j] = in.elements[pivrow * in.w_ + j];
+					in.elements[pivrow * in.w_ + j] = tmp;
+				}
+			}
+			pivrows[k] = pivrow;	// record row swap (even if no swap happened)
+
+			tmp = 1.0f / in.elements[k * in.w_ + k];	// invert pivot element
+			in.elements[k * in.w_ + k] = 1.0f;		// This element of input matrix becomes result matrix
+
+			// Perform row reduction (divide every element by pivot)
+			for (j = 0; j < n; j++)
+			{
+				in.elements[k * in.w_ + j] = in.elements[k * in.w_ + j] * tmp;
+			}
+
+			// Now eliminate all other entries in this column
+			for (i = 0; i < n; i++)
+			{
+				if (i != k)
+				{
+					tmp = in.elements[i * in.w_ + k];
+					in.elements[i * in.w_ + k] = 0.0f; // The other place where in matrix becomes result mat
+					for (j = 0; j < n; j++)
+					{
+						in.elements[i * in.w_ + j] = in.elements[i * in.w_ + j] - in.elements[k * in.w_ + j] * tmp;
+					}
+				}
+			}
+		}
+
+		// Done, now need to undo pivot row swaps by doing column swaps in reverse order
+		for (k = in.w_ - 1; k >= 0; k--)
+		{
+			if (pivrows[k] != k)
+			{
+				for (i = 0; i < n; i++)
+				{
+					tmp = in.elements[i * in.w_ + k];
+					in.elements[i * in.w_ + k] = in.elements[i * in.w_ + pivrows[k]];
+					in.elements[i * in.w_ + pivrows[k]] = tmp;
+				}
+			}
+		}
+	}
+	doneCalc:
+	return in;
+}
