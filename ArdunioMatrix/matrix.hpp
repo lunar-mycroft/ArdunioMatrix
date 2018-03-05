@@ -59,7 +59,7 @@ public:
 
 	//Math functions
 
-	friend Matrix invert(const Matrix &);
+	friend Matrix invert(const Matrix);
 	friend Matrix transp(const Matrix &);
 
 	float mag() const;

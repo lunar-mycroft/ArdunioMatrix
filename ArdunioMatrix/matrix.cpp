@@ -109,6 +109,19 @@ Matrix & Matrix::operator*=(const float& coeff) {
 }
 
 Matrix Matrix::operator*(const Matrix & other) const {
+	if(!canMul(*this,other)){
+		if (/*column, column*/){
+			return transp(*this)*other;
+		} else if (/*row, row*/){
+			return (*this)*transp(other);
+		} else if (/*column, row*/){
+			return transp(*this)*transp(other);
+		} else {
+			Matrix result(1,1);
+			result.NaNify;
+			return result;
+		}
+	}
 	// from https://github.com/eecharlie/MatrixMath/blob/master/MatrixMath.cpp
 	Matrix result(h_, other.w_);
 	unsigned char i, j, k;
@@ -221,4 +234,10 @@ Matrix invert()const Matrix in){
 	}
 	doneCalc:
 	return in;
+}
+
+float Matrix::mag(){
+	float resultSquared=0;
+	for(unsigned char i=0; i<h_*w_;++i) resultSquared+=elements[i]*elements[i];
+	return sqrt(resultSquared);
 }
