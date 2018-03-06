@@ -109,6 +109,7 @@ Matrix & Matrix::operator*=(const float& coeff) {
 }
 
 Matrix Matrix::operator*(const Matrix & other) const {
+	// toDo: max it "work" for two row vectors or two colum vectors, or two vectors in the wrong order
 	// from https://github.com/eecharlie/MatrixMath/blob/master/MatrixMath.cpp
 	Matrix result(h_, other.w_);
 	unsigned char i, j, k;

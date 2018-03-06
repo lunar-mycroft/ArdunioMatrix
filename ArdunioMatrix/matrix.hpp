@@ -20,7 +20,7 @@ public:
 	Matrix(unsigned char, unsigned char);
 	Matrix(float*, unsigned char, unsigned char);
 	Matrix(const imu::Vector<3>&);
-	Matrix(const imu::Quaternion &);
+	Matrix(const imu::Quaternion &);  //Generates a rotation matrix from a quaternion
 
 
 	//Big three
