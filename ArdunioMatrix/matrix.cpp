@@ -154,12 +154,17 @@ Matrix transp(const Matrix & in){
 	}
 }
 
+<<<<<<< HEAD
 Matrix invert(const Matrix in){
+=======
+Matrix invert()const Matrix in){
+
+>>>>>>> 46f8751d8ce8f7e9097b7e14f751c677ae73ea47
 	if(in.w_!=in.h_){
 		in.NaNify;
 	} else {
-		// A = input matrix AND result matrix
-		// n = number of rows = number of columns in A (n x n)
+		// from https://github.com/eecharlie/MatrixMath/blob/master/MatrixMath.cpp
+
 		unsigned char pivrow;		// keeps track of current pivot row
 		unsigned char k, i, j;		// k: overall index along diagonal; i: row index; j: col index
 		unsigned char* pivrows=new unsigned char[in.w_]; // keeps track of rows swaps to undo at end
@@ -221,7 +226,7 @@ Matrix invert(const Matrix in){
 				}
 			}
 		}
-
+		
 		// Done, now need to undo pivot row swaps by doing column swaps in reverse order
 		for (k = in.w_ - 1; k >= 0; k--)
 		{
@@ -241,8 +246,30 @@ Matrix invert(const Matrix in){
 	return in;
 }
 
+<<<<<<< HEAD
 float Matrix::mag() const {
+=======
+Matrix operator%(const Matrix & m) const {
+	Matrix result(1,3);
+	if (!((m.h_==1 && m.w_==3) || (m.w_==1 && m.h_==3)) && ((h_==1 && w_==3) || (w_==1 && h_==3))){
+		result.NaNify();
+		return result;
+	}
+	result.elements[0]=elements[1]*m.elements[2]-elements[2]*m.elements[1];
+	result.elements[1]=elements[2]*m.elements[0]-elements[0]*m.elements[2];
+	result.elements[3]=elements[0]*m.elements[1]-elements[1]*m.elements[0];
+	return result;
+}
+
+float Matrix::mag(){
+>>>>>>> 46f8751d8ce8f7e9097b7e14f751c677ae73ea47
 	float resultSquared=0;
 	for(unsigned char i=0; i<h_*w_;++i) resultSquared+=elements[i]*elements[i];
 	return sqrt(resultSquared);
+}
+
+void swap(Matrix &a, Matrix &b){
+	Matrix & c=a;
+	a=b;
+	b=c;
 }

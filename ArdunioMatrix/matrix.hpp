@@ -77,5 +77,7 @@ bool operator!=(const Matrix & left, const Matrix & right) { return !(left == ri
 
 float mag(const Matrix & m) { return m.mag(); }
 
+float toFloat(const Matrix & m) { return m.elements[0]; };
+
 
 #endif // !MATRIX_HPP
