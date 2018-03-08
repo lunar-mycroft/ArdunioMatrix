@@ -109,9 +109,8 @@ Matrix & Matrix::operator*=(const float& coeff) {
 }
 
 Matrix Matrix::operator*(const Matrix & other) const {
-<<<<<<< HEAD
 	// toDo: max it "work" for two row vectors or two colum vectors, or two vectors in the wrong order
-=======
+
 	if(!canMul(*this,other)){
 		if (/*column, column*/){
 			return transp(*this)*other;
@@ -125,7 +124,6 @@ Matrix Matrix::operator*(const Matrix & other) const {
 			return result;
 		}
 	}
->>>>>>> 325ba1e071fe52eb2a2f03b9d75cf310936d23cf
 	// from https://github.com/eecharlie/MatrixMath/blob/master/MatrixMath.cpp
 	Matrix result(h_, other.w_);
 	unsigned char i, j, k;
@@ -151,10 +149,12 @@ Matrix & Matrix::operator/=(const float& f) {
 
 Matrix transp(const Matrix & in){
 	Matrix result(in.h_,in.w_);
-	for(unsigned char i=0; i<in.w_;++i) for(unsigned char j=0; j<in.h_;++j) result.elements[j][i]=result.elements[i][j];
+	for (unsigned char i = 0; i < in.w_; ++i) for (unsigned char j = 0; j < in.h_; ++j) {
+		result.elements[j][i] = result.elements[i][j];
+	}
 }
 
-Matrix invert()const Matrix in){
+Matrix invert(const Matrix in){
 	if(in.w_!=in.h_){
 		in.NaNify;
 	} else {
@@ -162,14 +162,14 @@ Matrix invert()const Matrix in){
 		// n = number of rows = number of columns in A (n x n)
 		unsigned char pivrow;		// keeps track of current pivot row
 		unsigned char k, i, j;		// k: overall index along diagonal; i: row index; j: col index
-		unsigned char pivrows[n]; // keeps track of rows swaps to undo at end
+		unsigned char* pivrows=new unsigned char[in.w_]; // keeps track of rows swaps to undo at end
 		float tmp;		// used for finding max value and making column swaps
 
-		for (k = 0; k < n; k++)
+		for (k = 0; k < in.w_; k++)
 		{
 			// find pivot row, the row with biggest entry in current column
 			tmp = 0;
-			for (i = k; i < n; i++)
+			for (i = k; i < in.w_; i++)
 			{
 				if (abs(in.elements[i * in.w_ + k]) >= tmp)	// 'Avoid using other functions inside abs()?'
 				{
@@ -189,7 +189,7 @@ Matrix invert()const Matrix in){
 			if (pivrow != k)
 			{
 				// swap row k with pivrow
-				for (j = 0; j < n; j++)
+				for (j = 0; j < in.w_; j++)
 				{
 					tmp = in.elements[k * in.w_ + j];
 					in.elements[k * in.w_ + j] = in.elements[pivrow * in.w_ + j];
@@ -202,19 +202,19 @@ Matrix invert()const Matrix in){
 			in.elements[k * in.w_ + k] = 1.0f;		// This element of input matrix becomes result matrix
 
 			// Perform row reduction (divide every element by pivot)
-			for (j = 0; j < n; j++)
+			for (j = 0; j < in.w_; j++)
 			{
 				in.elements[k * in.w_ + j] = in.elements[k * in.w_ + j] * tmp;
 			}
 
 			// Now eliminate all other entries in this column
-			for (i = 0; i < n; i++)
+			for (i = 0; i < in.w_; i++)
 			{
 				if (i != k)
 				{
 					tmp = in.elements[i * in.w_ + k];
 					in.elements[i * in.w_ + k] = 0.0f; // The other place where in matrix becomes result mat
-					for (j = 0; j < n; j++)
+					for (j = 0; j < in.w_; j++)
 					{
 						in.elements[i * in.w_ + j] = in.elements[i * in.w_ + j] - in.elements[k * in.w_ + j] * tmp;
 					}
@@ -227,7 +227,7 @@ Matrix invert()const Matrix in){
 		{
 			if (pivrows[k] != k)
 			{
-				for (i = 0; i < n; i++)
+				for (i = 0; i < in.w_; i++)
 				{
 					tmp = in.elements[i * in.w_ + k];
 					in.elements[i * in.w_ + k] = in.elements[i * in.w_ + pivrows[k]];
@@ -235,12 +235,13 @@ Matrix invert()const Matrix in){
 				}
 			}
 		}
+		delete[] pivrows;
 	}
 	doneCalc:
 	return in;
 }
 
-float Matrix::mag(){
+float Matrix::mag() const {
 	float resultSquared=0;
 	for(unsigned char i=0; i<h_*w_;++i) resultSquared+=elements[i]*elements[i];
 	return sqrt(resultSquared);
