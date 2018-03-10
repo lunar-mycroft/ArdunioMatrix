@@ -1,4 +1,5 @@
 #include"matrix.hpp"
+#define SQ(x) x*x
 
 bool canAdd(const Matrix & left, const Matrix & right) {
 	return left.h_ == right.h_ && left.w_ == right.w_;
@@ -23,6 +24,22 @@ Matrix::Matrix(unsigned char w, unsigned char h) : h_(h), w_(w) {
 };
 
 Matrix::Matrix() : Matrix(0, 0) {};
+
+Matrix::Matrix(const imu::Quaternion & Q) : Matrix(0,0) {
+	float q = SQ(Q.x())+SQ(Q.y())+SQ(Q.z())+SQ(Q.w());
+	float s = (q == 0) ? 1 : (1.0 / q);
+	elements[0] = 1 - 2 * s * (SQ(Q.y()) + SQ(Q.z())); elements[1]= 2 * s * (Q.x()*Q.y() - Q.z() * Q.w()); elements[2] = 2 * s*(Q.x()*Q.z() + Q.y() * Q.w());
+	elements[3] = 2 * s * (Q.x()*Q.y() + Q.z() * Q.w()); elements[4] = 1 - 2 * s*(SQ(Q.x()) + SQ(Q.z())); elements[5] = 2 * s*(Q.y()*Q.z() - Q.x() * Q.w());
+	elements[6] = 2 * s*(Q.x()*Q.z() + Q.y() * Q.w()); elements[7] = 2 * s*(Q.y()*Q.z() + Q.x() * Q.w()); elements[8] = 1 - 2 * s*(SQ(Q.x()) + SQ(Q.y()));
+
+}
+
+
+Matrix::Matrix(const imu::Vector<3>& v) {
+	elements[0] = v[0];
+	elements[1] = v[1];
+	elements[2] = v[2];
+}
 
 Matrix::Matrix(const Matrix& other) {
 	h_ = other.h_;
