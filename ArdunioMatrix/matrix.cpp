@@ -254,7 +254,7 @@ Matrix invert()const Matrix in){
 	return in;
 }
 
-Matrix operator%(const Matrix & m) const {
+Matrix Matrix::cross(const Matrix & m) const {
 	Matrix result(1,3);
 	if (!((m.h_==1 && m.w_==3) || (m.w_==1 && m.h_==3)) && ((h_==1 && w_==3) || (w_==1 && h_==3))){
 		result.NaNify();
@@ -266,14 +266,47 @@ Matrix operator%(const Matrix & m) const {
 	return result;
 }
 
-float Matrix::mag(){
+float Matrix::mag() {
 	float resultSquared=0;
 	for(unsigned char i=0; i<h_*w_;++i) resultSquared+=elements[i]*elements[i];
 	return sqrt(resultSquared);
 }
 
 void swap(Matrix &a, Matrix &b){
-	Matrix & c=a;
-	a=b;
-	b=c;
+	unsigned char tempW  = a.w_;
+	unsigned char tempH  = a.h_;
+	float * tempElements = a.elements;
+	a.w_ = b.w_;
+	a.h_ = h.h_;
+	a.elements = b.elements;
+
+	b.w_ = tempW;
+	b.h_ = tempH;
+	b.elements = tempElements;
+}
+
+bool operator==
+
+Matrix rotBetweenVec(const Matrix & orig, const Matrix & target) {
+	Matrix result(3, 3);
+	if (!(orig.w() == 1 && orig.h() == 3 && target.w() == 1 && target.h() == 3)) result.NaNify();
+	else {
+		Matrix axis = orig.cross(target);
+
+		float angle2vert=asin(axis.mag())
+
+		float Qw = cos(angle2Vert / 2);
+		float Qx = sin(angle2Vert / 2)*axis.elements[0];
+		float Qy = sin(angle2Vert / 2)*axis.elements[1];
+		float Qz = sin(angle2Vert / 2)*axis.elements[2];
+
+		R2 = result.elements;
+
+		R2[0] = 1 - 2 * (SQ(Qy) + SQ(Qz)); R2[1] = 2 * (Qx*Qy - Qz * Qw); R2[2] = 2 * (Qx*Qz + Qy * Qw);
+		R2[3] = 2 * (Qx*Qy + Qz * Qw); R2[4] = 1 - 2 * (SQ(Qx) + SQ(q_z)); R2[5] = 2 * (Qy*Qz - Qx * Qw);
+		R2[6] = 2 * (Qx*Qz + Qy * Qw); R2[7] = 2 * (Qy*Qz + Qx * Qw); R[8] = 1 - 2 * (SQ(Qx) + SQ(Qy));
+	}
+	return result;
+	
+
 }
