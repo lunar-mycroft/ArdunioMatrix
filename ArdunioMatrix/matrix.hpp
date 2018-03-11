@@ -67,6 +67,7 @@ public:
 	friend bool canAdd(const Matrix &, const Matrix &);
 	friend bool canMul(const Matrix &, const Matrix &);
 	friend void swap(Matrix &, Matrix &);
+	friend float toFloat(const Matrix & m) { return m.elements[0]; };
 
 };
 
@@ -76,8 +77,5 @@ bool operator==(const Matrix &, const Matrix &);
 bool operator!=(const Matrix & left, const Matrix & right) { return !(left == right); }
 
 float mag(const Matrix & m) { return m.mag(); }
-
-float toFloat(const Matrix & m) { return m.elements[0]; };
-
 
 #endif // !MATRIX_HPP
