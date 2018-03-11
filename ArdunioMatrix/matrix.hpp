@@ -50,7 +50,7 @@ public:
 	Matrix operator*(const Matrix &) const;
 	Matrix & operator*=(const Matrix&);
 
-	Matrix operator%(const Matrix &) const; //Cross product
+	Matrix cross(const Matrix &) const; //Cross product
 
 	Matrix operator/(float f) const { return (1.0 / f)*(*this); };
 	Matrix & operator/=(const float&);
@@ -67,15 +67,28 @@ public:
 	friend bool canAdd(const Matrix &, const Matrix &);
 	friend bool canMul(const Matrix &, const Matrix &);
 	friend void swap(Matrix &, Matrix &);
+<<<<<<< HEAD
 	friend float toFloat(const Matrix & m) { return m.elements[0]; };
+=======
+	friend bool operator==(const Matrix &, const Matrix &);
+	friend Matrix rotBetweenVec(const Matrix & orig, const Matrix & target); //Returns a rotation matrix which will turn 
+>>>>>>> f8ec59363bf13f8ce3935bfc6054f60d177c47d6
 
 };
 
 Matrix operator*(float f, const Matrix & m) { return m*f; }
 Matrix operator/(float f, const Matrix & m) { return f*invert(m); }
-bool operator==(const Matrix &, const Matrix &);
+
 bool operator!=(const Matrix & left, const Matrix & right) { return !(left == right); }
 
 float mag(const Matrix & m) { return m.mag(); }
 
+<<<<<<< HEAD
+=======
+float toFloat(const Matrix & m) { return m.elements[0]; };
+
+
+
+
+>>>>>>> f8ec59363bf13f8ce3935bfc6054f60d177c47d6
 #endif // !MATRIX_HPP
