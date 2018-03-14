@@ -1,10 +1,14 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
 
+#include<iostream>;
+using std::istream;
 //#include"adafruitVector.hpp"
 //#include"adafruitQuaternion.hpp"
 
-struct loc {
+class loc {
+public:
+	loc(unsigned char X, unsigned char Y) : x(X), y(Y) {};
 	unsigned char x;
 	unsigned char y;
 };
@@ -76,14 +80,13 @@ public:
 
 	friend Matrix identity(unsigned char);
 
-
 };
 
-Matrix operator*(float f, const Matrix & m) { return m*f; }
-Matrix operator/(float f, const Matrix & m) { return f*invert(m); }
+Matrix operator*(float f, const Matrix & m);
+Matrix operator/(float f, const Matrix & m);
 
-bool operator!=(const Matrix & left, const Matrix & right) { return !(left == right); }
+bool operator!=(const Matrix & left, const Matrix & right);
 
-float mag(const Matrix & m) { return m.mag(); }
+float mag(const Matrix & m);
 
 #endif

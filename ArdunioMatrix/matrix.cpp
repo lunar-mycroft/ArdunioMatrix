@@ -2,6 +2,10 @@
 
 #include"matrix.hpp"
 
+#include<iostream>
+
+using std::cout;
+
 #define SQ(x) x*x
 #define abs(x) (x<0) ? -x : x
 
@@ -13,7 +17,7 @@ bool canMul(const Matrix & left, const Matrix & right) {
 	return right.h_ == left.w_;
 }
 
-Matrix::Matrix(float* in, unsigned char w, unsigned char h) : h_(h), w_(w) {
+Matrix::Matrix(float* in, unsigned char w, unsigned char h) : Matrix(w,h) {
 	for (unsigned char i = 0; i < w*h; ++i) {
 		elements[i] = in[i];
 	}
@@ -45,9 +49,7 @@ Matrix::Matrix(const imu::Vector<3>& v) {
 	elements[2] = v[2];
 }*/
 
-Matrix::Matrix(const Matrix& other) {
-	h_ = other.h_;
-	w_ = other.w_;
+Matrix::Matrix(const Matrix& other) : Matrix(other.w_,other.h_) {
 	for (unsigned char i = 0; i < h_*w_; ++i) {
 		elements[i] = other.elements[i];
 	}
@@ -79,6 +81,7 @@ Matrix Matrix::operator+(const Matrix& other) const {
 	} else {
 		result.NaNify();
 	}
+	cout << '\n';
 	return result;
 }
 
@@ -155,7 +158,7 @@ Matrix Matrix::operator*(const Matrix & other) const {
 		}
 	}
 	// from https://github.com/eecharlie/MatrixMath/blob/master/MatrixMath.cpp
-	Matrix result(h_, other.w_);
+	Matrix result(other.w_,h_);
 	unsigned char i, j, k;
 	for (i = 0; i < h_; i++) {
 		for (j = 0; j < other.w_; j++)
@@ -339,3 +342,19 @@ Matrix identity(unsigned char size) {
 	for (unsigned char i = 0; i < size; ++i) for (unsigned char j = 0; j < size; ++j) result.elements[i*size + j] = (i == j) ? 1.0 : 0.0;
 	return result;
 }
+
+Matrix operator*(float f, const Matrix & m) {
+	return m*f;
+}
+Matrix operator/(float f, const Matrix & m) {
+	return f*invert(m);
+}
+
+bool operator!=(const Matrix & left, const Matrix & right) {
+	return !(left == right);
+}
+
+float mag(const Matrix & m) {
+	return m.mag();
+}
+
