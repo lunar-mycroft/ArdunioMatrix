@@ -1,7 +1,8 @@
 #ifndef MATRIX_HPP
 #define MATRIX_HPP
-#include"adafruitVector.hpp"
-#include"adafruitQuaternion.hpp"
+
+//#include"adafruitVector.hpp"
+//#include"adafruitQuaternion.hpp"
 
 struct loc {
 	unsigned char x;
@@ -19,8 +20,8 @@ public:
 	Matrix();
 	Matrix(unsigned char, unsigned char);
 	Matrix(float*, unsigned char, unsigned char);
-	Matrix(const imu::Vector<3>&);
-	Matrix(const imu::Quaternion &);  //Generates a rotation matrix from a quaternion
+	/*Matrix(const imu::Vector<3>&);
+	Matrix(const imu::Quaternion &);  //Generates a rotation matrix from a quaternion*/
 
 
 	//Big three
@@ -52,7 +53,7 @@ public:
 
 	Matrix cross(const Matrix &) const; //Cross product
 
-	Matrix operator/(float f) const { return (1.0 / f)*(*this); };
+	Matrix operator/(float) const;
 	Matrix & operator/=(const float&);
 
 	Matrix operator/(const Matrix & other) const { return (*this)*invert(other); }
@@ -67,12 +68,14 @@ public:
 	friend bool canAdd(const Matrix &, const Matrix &);
 	friend bool canMul(const Matrix &, const Matrix &);
 	friend void swap(Matrix &, Matrix &);
-<<<<<<< HEAD
+
 	friend float toFloat(const Matrix & m) { return m.elements[0]; };
-=======
+
 	friend bool operator==(const Matrix &, const Matrix &);
 	friend Matrix rotBetweenVec(const Matrix & orig, const Matrix & target); //Returns a rotation matrix which will turn 
->>>>>>> f8ec59363bf13f8ce3935bfc6054f60d177c47d6
+
+	friend Matrix identity(unsigned char);
+
 
 };
 
@@ -83,12 +86,4 @@ bool operator!=(const Matrix & left, const Matrix & right) { return !(left == ri
 
 float mag(const Matrix & m) { return m.mag(); }
 
-<<<<<<< HEAD
-=======
-float toFloat(const Matrix & m) { return m.elements[0]; };
-
-
-
-
->>>>>>> f8ec59363bf13f8ce3935bfc6054f60d177c47d6
-#endif // !MATRIX_HPP
+#endif

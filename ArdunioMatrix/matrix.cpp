@@ -1,5 +1,9 @@
+#include<math.h>
+
 #include"matrix.hpp"
+
 #define SQ(x) x*x
+#define abs(x) (x<0) ? -x : x
 
 bool canAdd(const Matrix & left, const Matrix & right) {
 	return left.h_ == right.h_ && left.w_ == right.w_;
@@ -25,7 +29,7 @@ Matrix::Matrix(unsigned char w, unsigned char h) : h_(h), w_(w) {
 
 Matrix::Matrix() : Matrix(0, 0) {};
 
-Matrix::Matrix(const imu::Quaternion & Q) : Matrix(0,0) {
+/*Matrix::Matrix(const imu::Quaternion & Q) : Matrix(0,0) {
 	float q = SQ(Q.x())+SQ(Q.y())+SQ(Q.z())+SQ(Q.w());
 	float s = (q == 0) ? 1 : (1.0 / q);
 	elements[0] = 1 - 2 * s * (SQ(Q.y()) + SQ(Q.z())); elements[1]= 2 * s * (Q.x()*Q.y() - Q.z() * Q.w()); elements[2] = 2 * s*(Q.x()*Q.z() + Q.y() * Q.w());
@@ -39,7 +43,7 @@ Matrix::Matrix(const imu::Vector<3>& v) {
 	elements[0] = v[0];
 	elements[1] = v[1];
 	elements[2] = v[2];
-}
+}*/
 
 Matrix::Matrix(const Matrix& other) {
 	h_ = other.h_;
@@ -51,6 +55,7 @@ Matrix::Matrix(const Matrix& other) {
 
 Matrix & Matrix::operator=(Matrix other) {
 	swap(*this, other);
+	return *this;
 }
 
 Matrix::~Matrix() {
@@ -74,6 +79,7 @@ Matrix Matrix::operator+(const Matrix& other) const {
 	} else {
 		result.NaNify();
 	}
+	return result;
 }
 
 Matrix & Matrix::operator+=(const Matrix& other) {
@@ -98,6 +104,7 @@ Matrix Matrix::operator-(const Matrix& other) const {
 	else {
 		result.NaNify();
 	}
+	return result;
 }
 
 Matrix & Matrix::operator-=(const Matrix& other) {
@@ -117,12 +124,18 @@ Matrix Matrix::operator*(const float &coeff) const {
 	for (unsigned char i = 0; i < h_*w_; ++i) {
 		result.elements[i] = elements[i] * coeff;
 	}
+	return result;
+}
+
+Matrix Matrix::operator/(float f) const{ 
+	return (1.0 / f)*(*this); 
 }
 
 Matrix & Matrix::operator*=(const float& coeff) {
 	for (unsigned char i = 0; i < h_*w_; ++i) {
 		elements[i] *= coeff;
 	}
+	return *this;
 }
 
 Matrix Matrix::operator*(const Matrix & other) const {
@@ -137,7 +150,7 @@ Matrix Matrix::operator*(const Matrix & other) const {
 			return transp(*this)*transp(other);
 		} else {
 			Matrix result(1,1);
-			result.NaNify;
+			result.NaNify();
 			return result;
 		}
 	}
@@ -152,6 +165,7 @@ Matrix Matrix::operator*(const Matrix & other) const {
 				result.elements[other.w_ * i + j] = result.elements[other.w_ * i + j] + elements[w_ * i + k] * other.elements[other.w_ * k + j];
 		}
 	}
+	return result;
 }
 
 Matrix & Matrix::operator*=(const Matrix & other) {
@@ -166,93 +180,93 @@ Matrix & Matrix::operator/=(const float& f) {
 
 Matrix transp(const Matrix & in){
 	Matrix result(in.h_,in.w_);
-	for (unsigned char i = 0; i < in.w_; ++i) for (unsigned char j = 0; j < in.h_; ++j) {
-		result.elements[j][i] = result.elements[i][j];
+	for (unsigned char i = 0; i < in.w_; ++i) {
+		for (unsigned char j = 0; j < in.h_; ++j) {
+			result.elements[in.h_*j + i] = in.elements[in.w_*i+j];
+		}
 	}
 	return result;
 }
 
 
 Matrix invert(const Matrix in){
-
-	if(in.w_!=in.h_){
-		in.NaNify;
-	} else {
+	Matrix result(in);
+	if (result.w_ != result.h_) {
+		result.NaNify();
+	}
+	else {
 		// from https://github.com/eecharlie/MatrixMath/blob/master/MatrixMath.cpp
 
 		unsigned char pivrow;		// keeps track of current pivot row
 		unsigned char k, i, j;		// k: overall index along diagonal; i: row index; j: col index
-		unsigned char* pivrows = new unsigned char[in.w_]; // keeps track of rows swaps to undo at end
+		unsigned char* pivrows = new unsigned char[result.w_]; // keeps track of rows swaps to undo at end
 		float tmp;		// used for finding max value and making column swaps
 
-		for (k = 0; k < in.w_; k++) {
+		for (k = 0; k < result.w_; k++) {
 			// find pivot row, the row with biggest entry in current column
 			tmp = 0;
-			for (i = k; i < in.w_; i++) {
-				if (abs(in.elements[i * in.w_ + k]) >= tmp) {
-					tmp = abs(in.elements[i * in.w_ + k]);
+			for (i = k; i < result.w_; i++) {
+				if (abs(result.elements[i * result.w_ + k]) >= tmp) {
+					tmp = abs(result.elements[i * result.w_ + k]);
 					pivrow = i;
 				}
 			}
 
 			// check for singular matrix
-			if (in.elements[pivrow * in.w_ + k] == 0.0f) {
-				in.NaNify;
+			if (result.elements[pivrow * result.w_ + k] == 0.0f) {
+				result.NaNify();
 				goto doneCalc;
 			}
 
 			// Execute pivot (row swap) if needed
 			if (pivrow != k) {
 				// swap row k with pivrow
-				for (j = 0; j < in.w_; j++) {
-					tmp = in.elements[k * in.w_ + j];
-					in.elements[k * in.w_ + j] = in.elements[pivrow * in.w_ + j];
-					in.elements[pivrow * in.w_ + j] = tmp;
+				for (j = 0; j < result.w_; j++) {
+					tmp = result.elements[k * result.w_ + j];
+					result.elements[k * result.w_ + j] = result.elements[pivrow * result.w_ + j];
+					result.elements[pivrow * result.w_ + j] = tmp;
 				}
 			}
 			pivrows[k] = pivrow;	// record row swap (even if no swap happened)
 
-			tmp = 1.0f / in.elements[k * in.w_ + k];	// invert pivot element
-			in.elements[k * in.w_ + k] = 1.0f;		// This element of input matrix becomes result matrix
+			tmp = 1.0f / result.elements[k * result.w_ + k];	// invert pivot element
+			result.elements[k * result.w_ + k] = 1.0f;		// This element of input matrix becomes result matrix
 
-													// Perform row reduction (divide every element by pivot)
-			for (j = 0; j < in.w_; j++) {
-				in.elements[k * in.w_ + j] = in.elements[k * in.w_ + j] * tmp;
+															// Perform row reduction (divide every element by pivot)
+			for (j = 0; j < result.w_; j++) {
+				result.elements[k * result.w_ + j] = result.elements[k * result.w_ + j] * tmp;
 			}
 
 			// Now eliminate all other entries in this column
-			for (i = 0; i < in.w_; i++) {
+			for (i = 0; i < result.w_; i++) {
 				if (i != k) {
-					tmp = in.elements[i * in.w_ + k];
-					in.elements[i * in.w_ + k] = 0.0f; // The other place where in matrix becomes result mat
-					for (j = 0; j < in.w_; j++) {
-						in.elements[i * in.w_ + j] = in.elements[i * in.w_ + j] - in.elements[k * in.w_ + j] * tmp;
+					tmp = result.elements[i * result.w_ + k];
+					result.elements[i * result.w_ + k] = 0.0f; // The other place where in matrix becomes result mat
+					for (j = 0; j < result.w_; j++) {
+						result.elements[i * result.w_ + j] = result.elements[i * result.w_ + j] - result.elements[k * result.w_ + j] * tmp;
 					}
 				}
 			}
 		}
 
 		// Done, now need to undo pivot row swaps by doing column swaps in reverse order
-		for (k = in.w_ - 1; k >= 0; k--) {
+		for (k = result.w_ - 1; k >= 0; k--) {
 			if (pivrows[k] != k) {
-				for (i = 0; i < in.w_; i++) {
-					tmp = in.elements[i * in.w_ + k];
-					in.elements[i * in.w_ + k] = in.elements[i * in.w_ + pivrows[k]];
-					in.elements[i * in.w_ + pivrows[k]] = tmp;
+				for (i = 0; i < result.w_; i++) {
+					tmp = result.elements[i * result.w_ + k];
+					result.elements[i * result.w_ + k] = result.elements[i * result.w_ + pivrows[k]];
+					result.elements[i * result.w_ + pivrows[k]] = tmp;
 				}
 			}
 		}
 		delete[] pivrows;
 	}
-	doneCalc:
-	return in;
+doneCalc:
+	return result;
 }
 
-<<<<<<< HEAD
-Matrix Matrix::operator%(const Matrix & m) const {
-=======
+
 Matrix Matrix::cross(const Matrix & m) const {
->>>>>>> f8ec59363bf13f8ce3935bfc6054f60d177c47d6
 	Matrix result(1,3);
 	if (!((m.h_==1 && m.w_==3) || (m.w_==1 && m.h_==3)) && ((h_==1 && w_==3) || (w_==1 && h_==3))){
 		result.NaNify();
@@ -264,33 +278,21 @@ Matrix Matrix::cross(const Matrix & m) const {
 	return result;
 }
 
-<<<<<<< HEAD
+
 float Matrix::mag() const {
-=======
-float Matrix::mag() {
->>>>>>> f8ec59363bf13f8ce3935bfc6054f60d177c47d6
+
 	float resultSquared=0;
 	for(unsigned char i=0; i<h_*w_;++i) resultSquared+=elements[i]*elements[i];
 	return sqrt(resultSquared);
 }
 
 void swap(Matrix &a, Matrix &b){
-<<<<<<< HEAD
-	Matrix & c=a;
-	a=b;
-	b=c;
-}
 
-void Matrix::NaNify() {
-	for (unsigned char i = 0; i < w_*h_; ++i) {
-		elements[i] = NAN;
-	}
-=======
-	unsigned char tempW  = a.w_;
-	unsigned char tempH  = a.h_;
+	unsigned char tempW = a.w_;
+	unsigned char tempH = a.h_;
 	float * tempElements = a.elements;
 	a.w_ = b.w_;
-	a.h_ = h.h_;
+	a.h_ = b.h_;
 	a.elements = b.elements;
 
 	b.w_ = tempW;
@@ -298,29 +300,42 @@ void Matrix::NaNify() {
 	b.elements = tempElements;
 }
 
-bool operator==
+void Matrix::NaNify() {
+	for (unsigned char i = 0; i < w_*h_; ++i) {
+		elements[i] = NAN;
+	}
+}
+
+bool operator==(const Matrix &left, const Matrix & right) {
+	if (!(left.h_ == right.h_ && left.w_ == right.w_)) return false;
+	for (unsigned char i = 0; i < left.h_*left.w_; ++i) if (left.elements[i] != right.elements[i]) return false;
+	return true;
+}
 
 Matrix rotBetweenVec(const Matrix & orig, const Matrix & target) {
 	Matrix result(3, 3);
-	if (!(orig.w() == 1 && orig.h() == 3 && target.w() == 1 && target.h() == 3)) result.NaNify();
+	if (!(orig.width() == 1 && orig.height() == 3 && target.width() == 1 && target.height() == 3)) result.NaNify();
 	else {
 		Matrix axis = orig.cross(target);
 
-		float angle2vert=asin(axis.mag())
+		float angle2vert = asin(mag(axis) / (mag(orig)*mag(target)));
 
-		float Qw = cos(angle2Vert / 2);
-		float Qx = sin(angle2Vert / 2)*axis.elements[0];
-		float Qy = sin(angle2Vert / 2)*axis.elements[1];
-		float Qz = sin(angle2Vert / 2)*axis.elements[2];
+		float Qw = cos(angle2vert / 2);
+		float Qx = sin(angle2vert / 2)*axis.elements[0];
+		float Qy = sin(angle2vert / 2)*axis.elements[1];
+		float Qz = sin(angle2vert / 2)*axis.elements[2];
 
-		R2 = result.elements;
+		float * R2 = result.elements;
 
 		R2[0] = 1 - 2 * (SQ(Qy) + SQ(Qz)); R2[1] = 2 * (Qx*Qy - Qz * Qw); R2[2] = 2 * (Qx*Qz + Qy * Qw);
-		R2[3] = 2 * (Qx*Qy + Qz * Qw); R2[4] = 1 - 2 * (SQ(Qx) + SQ(q_z)); R2[5] = 2 * (Qy*Qz - Qx * Qw);
-		R2[6] = 2 * (Qx*Qz + Qy * Qw); R2[7] = 2 * (Qy*Qz + Qx * Qw); R[8] = 1 - 2 * (SQ(Qx) + SQ(Qy));
+		R2[3] = 2 * (Qx*Qy + Qz * Qw); R2[4] = 1 - 2 * (SQ(Qx) + SQ(Qz)); R2[5] = 2 * (Qy*Qz - Qx * Qw);
+		R2[6] = 2 * (Qx*Qz + Qy * Qw); R2[7] = 2 * (Qy*Qz + Qx * Qw); R2[8] = 1 - 2 * (SQ(Qx) + SQ(Qy));
 	}
 	return result;
-	
+}
 
->>>>>>> f8ec59363bf13f8ce3935bfc6054f60d177c47d6
+Matrix identity(unsigned char size) {
+	Matrix result(size, size);
+	for (unsigned char i = 0; i < size; ++i) for (unsigned char j = 0; j < size; ++j) result.elements[i*size + j] = (i == j) ? 1.0 : 0.0;
+	return result;
 }
